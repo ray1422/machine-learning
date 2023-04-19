@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import cross_val_score
 import matplotlib
+import my_model
 matplotlib.use('TkAgg')
 
 # Task 1: Generate data
@@ -24,14 +23,13 @@ for i, m in enumerate([10, 80, 320]):
     y = np.sin(2 * np.pi * x) + np.random.normal(loc=0, scale=0.2, size=m)
 
     # Task 5: Perform Polynomial Regression
-    poly = PolynomialFeatures(degree=degree)
-    X_poly = poly.fit_transform(x.reshape(-1, 1))
-    model_pr = LinearRegression()
+    X_poly = my_model.my_transform(x.reshape(-1, 1), degree=degree)
+    model_pr = my_model.MyLinearRegression()
     model_pr.fit(X_poly, y)
     y_pred_pr = model_pr.predict(X_poly)
     mse_cv_pr = -np.mean(cross_val_score(model_pr, X_poly, y, cv=5, scoring='neg_mean_squared_error'))
     x_plt = np.linspace(0, 1, num=1000)
-    y_pred_plt = model_pr.predict(poly.fit_transform(x_plt.reshape(-1, 1)))
+    y_pred_plt = model_pr.predict(my_model.my_transform(x_plt.reshape(-1, 1), degree=degree))
     plt.figure(figsize=(8, 6))
     plt.scatter(x, y, label='Data', color=colors[i])
     

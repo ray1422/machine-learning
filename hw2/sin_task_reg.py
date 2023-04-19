@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import Ridge
-from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import cross_val_score
 import matplotlib
+import my_model
 matplotlib.use('TkAgg')
 
 # Task 4 data
@@ -17,22 +16,21 @@ x_gt = np.linspace(0, 1, num=1000)
 y_gt = np.sin(2 * np.pi * x_gt)
 
 # Task 6 lambdas
-lambdas = [0/m, 0.001/m, 1/m, 1000/m]
+lambdas = [0, 0.001, 1, 1000]
 colors = ['red', 'green', 'blue', 'orange']
 
 # Task 4: Polynomial Regression (Degree 14)
 degree = 14
-poly = PolynomialFeatures(degree=degree)
-X_poly = poly.fit_transform(x.reshape(-1, 1))
+X_poly = my_model.my_transform(x.reshape(-1, 1), degree=degree)
 plt.scatter(x, y, label='Data', color='grey')
 for i, l in enumerate(lambdas):
-    model_ridge = Ridge(alpha=l)
+    model_ridge = my_model.MyRidgeRegression(alpha=l)
     mse_cv_ridge = -np.mean(cross_val_score(model_ridge, X_poly, y, cv=5, scoring='neg_mean_squared_error'))
     model_ridge.fit(X_poly, y)
     y_pred_ridge = model_ridge.predict(X_poly)
     mse_train_pr = np.mean((y_pred_ridge - y) ** 2)
     x_plt = np.linspace(0, 1, num=1000)
-    y_pred_plt = model_ridge.predict(poly.fit_transform(x_plt.reshape(-1, 1)))
+    y_pred_plt = model_ridge.predict(my_model.my_transform(x_plt.reshape(-1, 1), degree=degree))
     
     # plt.figure(figsize=(8, 6))
     plt.plot(x_plt, y_pred_plt, color=colors[i], label=f'Polynomial Regression (Degree {degree}, lambda={l:.6f})')
